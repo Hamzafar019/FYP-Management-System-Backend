@@ -10,15 +10,46 @@ const coordinatorauthentication = require('../middleware/coordinatorauthenticati
 // Create fypidea
 router.post('/',studentFYPregistrationauthentication , async (req, res) => {
   try {
+    
     const { title, description, student1, student2, student3 } = req.body;
+    const email1=student1
+    const email2=student2
+    let email3=student3
+    if(!email3){
+      email3="x@x.x"
+    }
+    const fyp_registration_status = await FYPregister.findAll({
+      where: {
+        [Op.or]: [
+          { student1: email1 },
+          { student2: email1 },
+          { student3: email1 },
+          { student1: email2 },
+          { student2: email2 },
+          { student3: email2 },
+          { student1: email3 },
+          { student2: email3 },
+          { student3: email3 },
+        ],
+      },
+    });
+
+    
+    if (fyp_registration_status.length === 0) {
+        
     const FYP_registration = await FYPregister.create({ title, description, student1, student2, student3});
 
     
-  res.status(201).json(FYP_registration);
+    res.status(201).json(FYP_registration);
+    }
+    else{
+      
+      res.status(400).json({ error:`One or more users are already registered. Please check.!!!!!!!`});
+    }
   } catch (error) {
     console.log(error);
     if (error.name === 'SequelizeForeignKeyConstraintError') {
-      res.status(400).json({ error: 'Invalid student email(s). Check if the students exist.' });
+      res.status(400).json({ error: 'Invalid student email(s). Chcdeck if the students exist.' });
     } else if (error.name === 'SequelizeUniqueConstraintError') {
 
       res.status(400).json({

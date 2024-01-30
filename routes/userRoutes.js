@@ -129,7 +129,7 @@ router.post("/login", async (req, res) => {
         role: existingUser.role,
       },
       secretKey, // Replace with a strong and secure secret key
-      { expiresIn: "15m" } // Token expiration time (adjust as needed)
+      { expiresIn: "30m" } // Token expiration time (adjust as needed)
     );
 
     res.status(200).json({ token, role: existingUser.role });
