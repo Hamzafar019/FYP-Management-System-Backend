@@ -24,11 +24,25 @@ router.post('/create', coordinatorauthentication, async (req, res) => {
 });
 
 
+router.get('/viewall', async (req, res) => {
+  try {
+    // Fetch all submissions from the database
+    const submissions = await Submission.findAll();
+    res.status(200).json(submissions); // Send response with all submissions
+  } catch (error) {
+    console.error('Error fetching submissions:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 // Route to get all submissions
 router.get('/view', async (req, res) => {
     try {
       // Fetch all submissions from the database
-      const submissions = await Submission.findAll();
+      const submissions = await Submission.findAll({
+        where: {
+          open: 'yes'
+        }
+     } );
       res.status(200).json(submissions); // Send response with all submissions
     } catch (error) {
       console.error('Error fetching submissions:', error);
@@ -43,11 +57,11 @@ router.get('/view', async (req, res) => {
 router.put('/edit/:id', coordinatorauthentication, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, dueDate } = req.body;
+    const { name, dueDate, open } = req.body;
 
     // Update the submission in the database
     const updatedSubmission = await Submission.update(
-      { name, dueDate },
+      { name, dueDate ,open},
       { where: { id } }
     );
 

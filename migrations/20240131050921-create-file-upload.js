@@ -18,6 +18,10 @@ module.exports = {
           key: 'id'
         }
       },
+      fileName: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       fileData: {
         allowNull: false,
         type: Sequelize.BLOB('long')

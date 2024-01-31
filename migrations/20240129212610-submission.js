@@ -14,6 +14,13 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+
+        open: {
+          type: Sequelize.ENUM('yes', 'no'),
+          allowNull: false,
+          defaultValue: 'yes' // Assuming 'yes' is the default value
+        
+      },
       dueDate: {
         type: Sequelize.DATE,
         allowNull: false

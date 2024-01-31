@@ -23,6 +23,10 @@ const Groupsubmissions = db.define('Groupsubmissions', {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    fileName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     fileData: {
       type: DataTypes.BLOB('long'),
       allowNull: false
