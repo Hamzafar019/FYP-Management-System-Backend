@@ -12,21 +12,23 @@ const supervisorauthentication=(req, res,next)=>{
     // }
   
     // const token = authHeader.replace('Bearer ', '');
-  
-    
     if(!token){
         res.status(401).send({error:"Please authenticate using a valid token"})
         return
     }
     const data= jwt.verify(token, secretKey)
     if(data.role!=="supervisor"){
-        res.status(401).send({error:"You are not a supervisor"})
+        res.status(401).send({error:"You are not a  supervisor"})
         return
     }
     req.id=data.id
     req.name=data.name
     req.email=data.email
     req.role=data.role
+    console.log(token)
+    console.log("\n\n\n\n")
+    console.log("SSS")
+    console.log("QWERT")
     next()
 }
 module.exports=supervisorauthentication

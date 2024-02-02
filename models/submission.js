@@ -13,6 +13,11 @@ const Submission = db.define('Submission', {
       allowNull: false,
       defaultValue:"yes"
     },
+    weightage:{
+      type: DataTypes.INTEGER,
+      allowNull: true
+
+    },
       dueDate: {
         type: DataTypes.DATE,
         allowNull: false

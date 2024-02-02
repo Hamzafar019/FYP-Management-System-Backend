@@ -3,33 +3,20 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('Submissions', {
+    await queryInterface.createTable('Temp', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
+      title: {
         type: Sequelize.STRING,
-        allowNull: false
-      }, 
-
-        open: {
-          type: Sequelize.ENUM('yes', 'no'),
-          allowNull: false,
-          defaultValue: 'yes' // Assuming 'yes' is the default value
-        
+        allowNull: false,
       },
-      
-    weightage:{
-      type: Sequelize.INTEGER,
-      allowNull: true
-
-    },
-      dueDate: {
-        type: Sequelize.DATE,
-        allowNull: false
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -43,6 +30,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('Submissions');
+    await queryInterface.dropTable('Temp');
   }
 };

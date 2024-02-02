@@ -7,6 +7,7 @@ const sequelize = new Sequelize({
   username: 'root',
   password: 'fypmanagementsystem@82023',
   database: 'fyp_management_system',
+  timezone: '+05:00',
 });
 // Test the connection
 sequelize.authenticate()

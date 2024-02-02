@@ -1,14 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const FYPregister = require(`../models/fyp_registrations.js`);
+const Temp = require(`../models/temp.js`);
+const FYP_ideas = require(`../models/fyp_ideas.js`);
 const { Op } = require('sequelize');
 const studentauthentication = require('../middleware/studentauthentication.js');
+const supervisorauthentication = require('../middleware/supervisorauthentication.js');
 const studentFYPregistrationauthentication = require('../middleware/studentFYPregistrationauthentication.js');
+const uniquetitle = require('../middleware/uniquetitle.js');
 const coordinatorauthentication = require('../middleware/coordinatorauthentication.js');
 
 
 // Create fypidea
-router.post('/',studentFYPregistrationauthentication , async (req, res) => {
+router.post('/',studentFYPregistrationauthentication , uniquetitle, async (req, res) => {
   try {
     
     const { title, description, student1, student2, student3 } = req.body;
@@ -18,6 +22,7 @@ router.post('/',studentFYPregistrationauthentication , async (req, res) => {
     if(!email3){
       email3="x@x.x"
     }
+
     const fyp_registration_status = await FYPregister.findAll({
       where: {
         [Op.or]: [
@@ -36,9 +41,13 @@ router.post('/',studentFYPregistrationauthentication , async (req, res) => {
 
     
     if (fyp_registration_status.length === 0) {
-        
+    
+    const temp = await Temp.create({ title, description});        
     const FYP_registration = await FYPregister.create({ title, description, student1, student2, student3});
-
+    FYP_ideas.update(
+      { availability: 'no' }, // Set availability to 'no'
+      { where: { title: title } } // Match by title
+    )
     
     res.status(201).json(FYP_registration);
     }
@@ -117,6 +126,11 @@ router.put('/update/',coordinatorauthentication, async (req, res) => {
       return res.status(404).json({ error: 'Registration not found' });
     }
 
+    const deletedRows = await Temp.destroy({
+      where: {
+        title: registration.title
+      }
+    });
     registration.viewed = viewedValue;
     registration.accepted = approveValue;
     registration.reason = reasonValue;
@@ -133,7 +147,30 @@ router.put('/update/',coordinatorauthentication, async (req, res) => {
 
 
 
-router.put('/update_title_description/',studentauthentication, async (req, res) => {
+router.post('/groupdetails',supervisorauthentication, async (req, res) => {
+  try {
+    
+    const id = req.body.id;
+    
+    const registration = await FYPregister.findByPk(id);
+    if (!registration) {
+      return res.status(404).json({ error: 'Registration not found' });
+    }
+    console.log(registration)
+    res.json(registration);
+  } catch (error) {
+    console.log("fff")
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
+
+
+
+router.put('/update_title_description/',studentauthentication, uniquetitle, async (req, res) => {
   try {
     const { id } = req.query;
     const { title, description} = req.body;
@@ -141,6 +178,7 @@ router.put('/update_title_description/',studentauthentication, async (req, res) 
     if (!registration) {
       return res.status(404).json({ error: 'Registration not found' });
     }
+    
     registration.title=title
     registration.description=description
     registration.viewed = "no";
@@ -149,7 +187,13 @@ router.put('/update_title_description/',studentauthentication, async (req, res) 
     registration.supervisor = null;
 
     await registration.save();
-
+    
+    const temp = await Temp.create({ title, description});      
+    FYP_ideas.update(
+      { availability: 'no' }, // Set availability to 'no'
+      { where: { title: title } } // Match by title
+    )
+    
     res.json(registration);
   } catch (error) {
     console.error(error);

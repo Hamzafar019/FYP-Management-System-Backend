@@ -15,7 +15,7 @@ const authentication=(req, res,next)=>{
   
     
     if(!token){
-        res.status(401).send({error:"Please authenticate using a valid token"})
+        res.status(401).send({error:"Please authenticate  using a valid token"})
     }
     const data= jwt.verify(token, secretKey)
     req.id=data.id
