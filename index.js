@@ -20,6 +20,7 @@ app.use('/data', require('./routes/FYP_dataRoutes'));
 app.use('/submission', require('./routes/submissionRoutes'));
 app.use('/groupsubmission', require('./routes/groupsubmissionRoutes'));
 app.use('/meetings', require('./routes/meetingRoutes'));
+app.use('/report', require('./routes/reportgenerationRoutes'));
 
 
 

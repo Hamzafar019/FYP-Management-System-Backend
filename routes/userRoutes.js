@@ -139,4 +139,72 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
+
+
+router.put("/changePassword", authentication, async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.id; // Assuming you have user ID in the request object after authentication
+    
+    // Fetch the user from the database
+    const user = await User.findByPk(userId);
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+
+    // Verify if the old password matches the current password
+    const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordMatch) {
+      return res.status(401).send({ error: "Invalid old password" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the user's password in the database
+    await user.update({ password: hashedNewPassword });
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+router.put("/adminChangePassword", authentication, async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    
+    // Fetch the user from the database
+    const user = await User.findOne({ where: { email:email } });
+
+    
+    console.log("S")
+    console.log(email)
+    // Check if the user exists
+    if (!user) {
+      console.log("F")
+      return res.status(404).send({ error: "User not found" });
+    }
+
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+    // Update the user's password in the database
+    await user.update({ password: hashedNewPassword });
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 module.exports = router;
