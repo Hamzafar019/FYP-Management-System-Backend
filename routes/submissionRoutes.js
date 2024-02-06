@@ -5,6 +5,9 @@ const { Sequelize } = require('sequelize');
 const coordinatorauthentication = require('../middleware/coordinatorauthentication.js');
 // const { Groupsubmissions, _ } = require('../models/groupsubmission.js');
 const { Submission, Groupsubmissions } = require('../models/submission_groupsubmission.js');
+const Notifications = require(`../models/notifications.js`);
+const Users = require(`../models/users.js`);
+const { Op } = require('sequelize');
 
 
 // Endpoint to create submission
@@ -18,6 +21,21 @@ router.post('/create', coordinatorauthentication, async (req, res) => {
             dueDate,
             weightage
         });
+
+        const students = await Users.findAll({
+          attributes: ['email'],
+          where: {
+            role: {[Op.or]: ['student']}
+          }
+          
+        });
+    
+        for (const user of students) {
+          await Notifications.create({
+            email: user.email,
+            text: `New Submission "${name}"  Opened`,
+            route: '/student/viewFYPsubmissions'
+          });}
 
         res.status(201).json(submission); // Send response with created submission
     } catch (error) {
@@ -67,6 +85,23 @@ router.put('/edit/:id', coordinatorauthentication, async (req, res) => {
       { name, dueDate ,open,weightage},
       { where: { id } }
     );
+    if (open === 'no') {
+
+    const supervisors = await Users.findAll({
+      attributes: ['email'],
+      where: {
+        role: {[Op.or]: ['supervisor']}
+      }
+      
+    });
+
+    for (const user of supervisors) {
+      await Notifications.create({
+        email: user.email,
+        text: `${name} Submission Closed. Please check the submissions`,
+        route: '/supervisor/viewFYPsubmissions'
+      });}
+    }
 
     res.status(200).json(updatedSubmission);
   } catch (error) {

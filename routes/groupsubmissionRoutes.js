@@ -1,6 +1,8 @@
 const express = require('express');
 const supervisorauthentication = require('../middleware/supervisorauthentication.js');
 const router = express.Router();
+const Notifications = require(`../models/notifications.js`);
+const FYPregister = require(`../models/fyp_registrations.js`);
 
 const { Groupsubmissions, FileUploads } = require('../models/groupsubmission.js');
 // const FYP_registrations = require('../models/fyp_registrations.js');
@@ -26,7 +28,6 @@ router.post('/', upload.single('file'), async (req, res) => {
         groupId
       });
       
-      console.log("shit")
     }
     else{
       console.log(submissionId,groupId)
@@ -49,6 +50,23 @@ router.post('/', upload.single('file'), async (req, res) => {
       fileName,
       fileData,
       fileExtension
+    });
+
+
+
+
+    const group = await FYPregister.findOne({
+      attributes: ['supervisor'],
+      where: {
+        id: groupId
+      }
+      
+    });
+
+    await Notifications.create({
+      email: group.supervisor,
+      text: `Group: ${groupId} has uploaded a file for Submission id: ${submissionId}.`,
+      route: '/supervisor/viewwork'
     });
 
     res.status(201).json({ existingSubmission, newFileUpload });
@@ -124,6 +142,40 @@ router.put('/updatesupervisormarks', supervisorauthentication, async (req, res) 
     if (!groupSubmission) {
       return res.status(404).json({ error: 'Group submission not found' });
     }
+
+
+
+
+
+    
+    const student = await FYPregister.findOne({
+      attributes: ['student1','student2','student3'],
+      where: {
+        id: groupId
+      }
+      
+    });
+
+    await Notifications.create({
+      email: student.student1,
+      text: `You got ${supervisorMarks} marks out of 100 in submission: ${submissionId}`,
+      route: '/student/meetingsdetails'
+    });
+    await Notifications.create({
+      email: student.student2,
+      text: `You got ${supervisorMarks} marks out of 100 in submission: ${submissionId}`,
+      route: '/student/meetingsdetails'
+    });
+
+    if(student.student3){
+    await Notifications.create({
+      email: student.student3,
+      text: `You got ${supervisorMarks} marks out of 100 in submission: ${submissionId}`,
+      route: '/student/meetingsdetails'
+    });
+}
+
+
 
     // Update the supervisorMarks
     await groupSubmission.update({ supervisorMarks: supervisorMarks });

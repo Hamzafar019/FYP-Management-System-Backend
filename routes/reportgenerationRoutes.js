@@ -4,19 +4,30 @@ const FYPregister = require(`../models/fyp_registrations.js`);
 const { Submission, Groupsubmissions } = require('../models/submission_groupsubmission.js');
 const Meetings = require('../models/meetings.js');
 const coordinatorauthentication = require('../middleware/coordinatorauthentication.js');
+const { Op } = require('sequelize');
 
-router.get('/details/:email', coordinatorauthentication, async (req, res) => {
-    const email = req.params.email;
+router.get('/details', coordinatorauthentication, async (req, res) => {
+    const email = req.query.email;
+    console.log(email)
+    console.log("\n\n\n")
 
     try {
+        console.log("FFF")
         // Step 1: Find FYP registration by email
         const registration = await FYPregister.findOne({
-            $or: [{ student1: email }, { student2: email }, { student3: email }],
-            supervisor: null
-        });
+            where: {
+              [Op.or]: [
+                { student1: email },
+                { student2: email },
+                { student3: email }
+              ]
+            }
+          });
 
         if (!registration) {
-            return res.status(404).send("Your registration is not done. Please check your status.");
+        console.log("QQQ")
+
+            return res.status(404).json("Your  registration is not done. Please check your status.");
         }
 
         let foundInColumn = null;
@@ -28,8 +39,6 @@ router.get('/details/:email', coordinatorauthentication, async (req, res) => {
         } else if (registration.student3 === email) {
             foundInColumn = 'student3';
         }
-        const groupSubmissions = await Groupsubmissions.findAll({ where: { groupId: registration._id } });
-
         // Create an array to store submission details
         const submissionDetails = [];
         let totalMarks=0
@@ -64,10 +73,15 @@ router.get('/details/:email', coordinatorauthentication, async (req, res) => {
 
     // Use the query object in the MongoDB query
     const attendanceCount = await Meetings.count({query});
+    
         // Step 4: Count the number of meetings where the group is present
         const meetingsCounts = await Meetings.count({ where:{groupId: registration.id}});
+        console.log(registration)
+        console.log(totalMarks)
+        console.log(meetingsCounts)
+        console.log(submissionDetails)
 
-        res.json({ totalMarks, meetingsCounts,submissionDetails, attendanceCount});
+        res.json({ totalMarks, meetingsCounts,submissionDetails, attendanceCount,registration});
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");

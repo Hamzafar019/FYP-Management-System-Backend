@@ -3,13 +3,14 @@ const router = express.Router();
 const FYPregister = require(`../models/fyp_registrations.js`);
 const Temp = require(`../models/temp.js`);
 const FYP_ideas = require(`../models/fyp_ideas.js`);
+const Notifications = require(`../models/notifications.js`);
+const Users = require(`../models/users.js`);
 const { Op } = require('sequelize');
 const studentauthentication = require('../middleware/studentauthentication.js');
 const supervisorauthentication = require('../middleware/supervisorauthentication.js');
 const studentFYPregistrationauthentication = require('../middleware/studentFYPregistrationauthentication.js');
 const uniquetitle = require('../middleware/uniquetitle.js');
 const coordinatorauthentication = require('../middleware/coordinatorauthentication.js');
-
 
 // Create fypidea
 router.post('/',studentFYPregistrationauthentication , uniquetitle, async (req, res) => {
@@ -48,7 +49,21 @@ router.post('/',studentFYPregistrationauthentication , uniquetitle, async (req, 
       { availability: 'no' }, // Set availability to 'no'
       { where: { title: title } } // Match by title
     )
-    
+
+    const adminUsers = await Users.findAll({
+      attributes: ['email'],
+      where: {
+        role: 'coordinator'
+      }
+      
+    });
+
+    for (const user of adminUsers) {
+      await Notifications.create({
+        email: user.email,
+        text: 'New Registration',
+        route: '/coordinator/newRegistrations'
+      });}
     res.status(201).json(FYP_registration);
     }
     else{
@@ -138,6 +153,47 @@ router.put('/update/',coordinatorauthentication, async (req, res) => {
 
     await registration.save();
 
+
+    if(supervisor){
+
+   
+
+      await Notifications.create({
+        email: supervisor,
+        text: `Group ${registration.id} is now under your supervision.`,
+        route: '/supervisor/mygroups'
+      }); }
+
+
+
+    
+    const student = await FYPregister.findOne({
+      attributes: ['student1','student2','student3'],
+      where: {
+        id: id
+      }
+      
+    });
+
+    await Notifications.create({
+      email: student.student1,
+      text: `Your FYP application has been reviewed.`,
+      route: '/student/FYPstatus'
+    });
+    await Notifications.create({
+      email: student.student2,
+      text: `Your FYP application has been reviewed.`,
+      route: '/student/FYPstatus'
+    });
+
+    if(student.student3){
+    await Notifications.create({
+      email: student.student3,
+      text: `Your FYP application has been reviewed.`,
+      route: '/student/FYPstatus'
+    });
+}
+
     res.json(registration);
   } catch (error) {
     console.error(error);
@@ -194,6 +250,21 @@ router.put('/update_title_description/',studentauthentication, uniquetitle, asyn
       { where: { title: title } } // Match by title
     )
     
+    
+    const adminUsers = await Users.findAll({
+      attributes: ['email'],
+      where: {
+        role: 'admin'
+      }
+      
+    });
+
+    for (const user of adminUsers) {
+      await Notifications.create({
+        email: user.email,
+        text: 'New Registration',
+        route: '/coordinator/newRegistrations'
+      });}
     res.json(registration);
   } catch (error) {
     console.error(error);

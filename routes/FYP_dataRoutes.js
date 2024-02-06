@@ -4,7 +4,8 @@ const Video = require('../models/videos');
 const upload = require('../middleware/FYPrelatedvideos');
 const supervisorauthentication = require('../middleware/supervisorauthentication');
 const supervisorandstudentauthentication = require('../middleware/supervisorandstudentauthentication');
-
+const Notifications = require(`../models/notifications.js`);
+const FYPregister = require(`../models/fyp_registrations.js`);
 const fs=require('fs')
 
 
@@ -28,6 +29,35 @@ router.post('/FYPrelatedData', supervisorauthentication, upload.single('videoFil
       videoLink,
     });
 
+
+
+    
+    const group = await FYPregister.findOne({
+      attributes: ['student1','student2','student3'],
+      where: {
+        id: groupId
+      }
+      
+    });
+
+    await Notifications.create({
+      email: group.student1,
+      text: `Your supervisor uploaded video/videolink.`,
+      route: '/student/viewvideos'
+    });
+    await Notifications.create({
+      email: group.student2,
+      text: `Your supervisor uploaded video/videolink.`,
+      route: '/student/viewvideos'
+    });
+
+    if(group.student3){
+    await Notifications.create({
+      email: group.student3,
+      text: `Your supervisor uploaded video/videolink.`,
+      route: '/student/viewvideos'
+    });
+  }
     res.status(201).json({ message: "Video submitted successfully", video });
   } catch (error) {
     console.error("Error submitting video:", error);

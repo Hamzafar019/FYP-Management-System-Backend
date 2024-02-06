@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Announcement = require(`../models/announcements.js`);
+const Notifications = require(`../models/notifications.js`);
+const Users = require(`../models/users.js`);
 const { Op } = require('sequelize');
 const coordinatorauthentication = require('../middleware/coordinatorauthentication.js');
-
+const  io = require('../index'); 
 // Create announcement
 router.post('/',coordinatorauthentication , async (req, res) => {
     try {
@@ -11,6 +13,46 @@ router.post('/',coordinatorauthentication , async (req, res) => {
       const announcement = await Announcement.create({ title, content, target });
 
       
+      
+    // io.emit('bothannouncement','sd');
+
+
+
+
+    if (target === 'supervisor' || target === 'both' ) {
+
+      const supervisors = await Users.findAll({
+        attributes: ['email'],
+        where: {
+          role: {[Op.or]: ['supervisor']}
+        }
+        
+      });
+  
+      for (const user of supervisors) {
+        await Notifications.create({
+          email: user.email,
+          text: `New Announcement ${title}`,
+          route: '/supervisor/viewannouncements'
+        });}
+      }
+      if (target === 'student' || target === 'both' ) {
+  
+        const students = await Users.findAll({
+          attributes: ['email'],
+          where: {
+            role: {[Op.or]: ['student']}
+          }
+          
+        });
+    
+        for (const user of students) {
+          await Notifications.create({
+            email: user.email,
+            text: `New Announcement. Title: ${title}`,
+            route: '/student/viewannouncements'
+          });}
+        }
     res.status(201).json(announcement);
     //   res.json(announcement);
     } catch (error) {
@@ -18,6 +60,8 @@ router.post('/',coordinatorauthentication , async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+
   
   // Read all announcements
   router.get('/', coordinatorauthentication, async (req, res) => {

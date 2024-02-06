@@ -5,7 +5,7 @@ const authentication = require('../middleware/authentication.js');
 const router = express.Router();
 const Meetings = require('../models/meetings.js');
 const FYPregister = require(`../models/fyp_registrations.js`);
-
+const Notifications = require(`../models/notifications.js`);
 
 // Define your routes
 router.post('/create', supervisorauthentication, async (req, res) => {
@@ -21,6 +21,37 @@ router.post('/create', supervisorauthentication, async (req, res) => {
         dateTime
         // Add other fields as needed
       });
+
+
+
+
+      const student = await FYPregister.findOne({
+        attributes: ['student1','student2','student3'],
+        where: {
+          id: groupId
+        }
+        
+      });
+
+      await Notifications.create({
+        email: student.student1,
+        text: `FYP Meeting set on ${dateTime}.`,
+        route: '/student/meetingsdetails'
+      });
+      await Notifications.create({
+        email: student.student2,
+        text: `FYP Meeting set on ${dateTime}.`,
+        route: '/student/meetingsdetails'
+      });
+
+      if(student.student3){
+      await Notifications.create({
+        email: student.student3,
+        text: `FYP Meeting set on ${dateTime}.`,
+        route: '/student/meetingsdetails'
+      });
+  }
+
   
       res.status(201).json(meeting);
     } catch (error) {

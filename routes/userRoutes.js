@@ -132,7 +132,7 @@ router.post("/login", async (req, res) => {
       { expiresIn: "30m" } // Token expiration time (adjust as needed)
     );
 
-    res.status(200).json({ token, role: existingUser.role });
+    res.status(200).json({ token, role: existingUser.role,name:existingUser.name,email:existingUser.email });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -203,6 +203,35 @@ router.put("/adminChangePassword", authentication, async (req, res) => {
   } catch (error) {
     console.error("Error changing password:", error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+router.get("/students", coordinatorauthentication,async (req, res) => {
+  try {
+    console.log("shit\n\n\n")
+    // Find all supervisors from the User model
+    const students = await User.findAll({
+      attributes: ["name","email"],
+      where: {
+        role: "student",
+      },
+      raw: true,
+    });
+    console.log("pieceS\n\n\n")
+    res.status(200).json({ students });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
