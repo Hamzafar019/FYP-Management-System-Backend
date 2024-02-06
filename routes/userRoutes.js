@@ -210,6 +210,29 @@ router.put("/adminChangePassword", authentication, async (req, res) => {
 
 
 
+router.get("/getuserdetail", coordinatorauthentication,async (req, res) => {
+  try {
+    const email=req.query.email
+    console.log({email})
+    console.log("\n\n\n\n")
+    // Find all supervisors from the User model
+    const user = await User.findOne({
+      attributes: ["id","name","email"],
+      where: {
+        email
+      },
+      raw: true,
+    });
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+
 
 
 

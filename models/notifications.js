@@ -13,7 +13,12 @@ const Notifications = db.define('Notifications', {
     route: {
       type: DataTypes.STRING,
       allowNull: false // Route cannot be null
-    }
+    },
+    view: {
+      type: DataTypes.ENUM('yes', 'no'),
+      allowNull: false,
+      defaultValue:"no"
+    },
   });
   
 

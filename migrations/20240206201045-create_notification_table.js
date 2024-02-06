@@ -22,6 +22,11 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      view:{
+      type: Sequelize.ENUM('yes', 'no'),
+      allowNull: false,
+      defaultValue: 'no'
+    },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -5,12 +5,24 @@ const Notifications = require(`../models/notifications.js`);
 const Users = require(`../models/users.js`);
 const { Op } = require('sequelize');
 const supervisorauthentication = require('../middleware/supervisorauthentication.js');
+const uniquetitle = require('../middleware/uniquetitle.js');
 
 
 // Create fypidea
-router.post('/',supervisorauthentication , async (req, res) => {
+router.post('/',supervisorauthentication , uniquetitle, async (req, res) => {
   try {
     const { title, description } = req.body;
+
+    const all_fyps = await FYP_ideas.findAll({
+      where:{
+          title:title
+      }
+  });
+    if (all_fyps.length > 0) {
+      return res.status(404).json({ error: 'Project with this title is already proposed. Kindly check "View FYP Suggestions" for proposed FYPs' });
+    }
+
+
     const fyp_idea = await FYP_ideas.create({ title, description});
 
     const students = await Users.findAll({

@@ -43,6 +43,6 @@ app.use('/meetings', require('./routes/meetingRoutes'));
 app.use('/report', require('./routes/reportgenerationRoutes'));
 app.use('/notifications', require('./routes/notificationsRoutes'));
 
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

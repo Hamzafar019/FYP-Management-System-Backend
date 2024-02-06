@@ -1,5 +1,6 @@
 const express = require('express');
 const supervisorauthentication = require('../middleware/supervisorauthentication.js');
+const supervisorandstudentauthentication = require('../middleware/supervisorandstudentauthentication.js');
 const router = express.Router();
 const Notifications = require(`../models/notifications.js`);
 const FYPregister = require(`../models/fyp_registrations.js`);
@@ -77,7 +78,7 @@ router.post('/', upload.single('file'), async (req, res) => {
 });
 
 
-router.get('/view',supervisorauthentication,async(req,res)=>{
+router.get('/view',supervisorandstudentauthentication,async(req,res)=>{
   try{
     
     const { submissionId, groupId } = req.query;
@@ -159,19 +160,19 @@ router.put('/updatesupervisormarks', supervisorauthentication, async (req, res) 
     await Notifications.create({
       email: student.student1,
       text: `You got ${supervisorMarks} marks out of 100 in submission: ${submissionId}`,
-      route: '/student/meetingsdetails'
+      route: '/student/viewwork'
     });
     await Notifications.create({
       email: student.student2,
       text: `You got ${supervisorMarks} marks out of 100 in submission: ${submissionId}`,
-      route: '/student/meetingsdetails'
+      route: '/student/viewwork'
     });
 
     if(student.student3){
     await Notifications.create({
       email: student.student3,
       text: `You got ${supervisorMarks} marks out of 100 in submission: ${submissionId}`,
-      route: '/student/meetingsdetails'
+      route: '/student/viewwork'
     });
 }
 
