@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../db');
 
-const FYP_ideas = db.define('Industry_projects', {
+const Industry_projects = db.define('Industry_projects', {
   title: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -30,4 +30,4 @@ const FYP_ideas = db.define('Industry_projects', {
 });
 
 
-module.exports = FYP_ideas;
+module.exports = Industry_projects;

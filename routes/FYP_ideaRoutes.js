@@ -49,6 +49,7 @@ router.post('/',supervisorauthentication , uniquetitle, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 router.get('/', async (req, res) => {
     try {
       const fyp_idea = await FYP_ideas.findAll({

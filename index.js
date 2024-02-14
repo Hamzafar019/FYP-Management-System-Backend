@@ -42,6 +42,9 @@ app.use('/groupsubmission', require('./routes/groupsubmissionRoutes'));
 app.use('/meetings', require('./routes/meetingRoutes'));
 app.use('/report', require('./routes/reportgenerationRoutes'));
 app.use('/notifications', require('./routes/notificationsRoutes'));
+app.use('/industryproject', require('./routes/industryprojectsRoutes'));
+app.use('/domain', require('./routes/domainRoutes'));
+app.use('/domainvideos', require('./routes/domainvideosRoutes'));
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

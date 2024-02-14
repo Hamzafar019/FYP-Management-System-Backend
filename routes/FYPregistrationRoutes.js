@@ -11,8 +11,9 @@ const supervisorauthentication = require('../middleware/supervisorauthentication
 const studentFYPregistrationauthentication = require('../middleware/studentFYPregistrationauthentication.js');
 const uniquetitle = require('../middleware/uniquetitle.js');
 const coordinatorauthentication = require('../middleware/coordinatorauthentication.js');
-
+const IndustryProjects = require('../models/industry_projects.js');
 // Create fypidea
+
 router.post('/',studentFYPregistrationauthentication , uniquetitle, async (req, res) => {
   try {
     
@@ -49,6 +50,12 @@ router.post('/',studentFYPregistrationauthentication , uniquetitle, async (req, 
       { availability: 'no' }, // Set availability to 'no'
       { where: { title: title } } // Match by title
     )
+    
+    IndustryProjects.update(
+      { availability: 'no' }, // Set availability to 'no'
+      { where: { title: title } } // Match by title
+    )
+    
 
     const adminUsers = await Users.findAll({
       attributes: ['email'],
@@ -250,11 +257,16 @@ router.put('/update_title_description/',studentauthentication, uniquetitle, asyn
       { where: { title: title } } // Match by title
     )
     
+    IndustryProjects.update(
+      { availability: 'no' }, // Set availability to 'no'
+      { where: { title: title } } // Match by title
+    )
+    
     
     const adminUsers = await Users.findAll({
       attributes: ['email'],
       where: {
-        role: 'admin'
+        role: 'coordinator'
       }
       
     });
