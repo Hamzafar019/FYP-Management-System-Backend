@@ -51,7 +51,9 @@ router.post('/',supervisorauthentication , uniquetitle, async (req, res) => {
 });
 router.get('/', async (req, res) => {
     try {
-      const fyp_idea = await FYP_ideas.findAll();
+      const fyp_idea = await FYP_ideas.findAll({
+        order: [['createdAt', 'DESC']] // Assuming 'createdAt' is the timestamp field
+      });
       if (fyp_idea.length === 0) {
         return res.status(404).json({ error: 'No FYP idea found' });
       }

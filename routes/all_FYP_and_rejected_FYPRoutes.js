@@ -33,7 +33,11 @@ router.post('/',coordinatorauthentication , async (req, res) => {
 
   router.get('/', async (req, res) => {
     try {
-      const all_fyps = await All_fyps.findAll();
+      const all_fyps = await All_fyps.findAll(
+        {
+          order: [['createdAt', 'DESC']] 
+         }
+      );
       if (all_fyps.length === 0) {
         return res.status(404).json({ error: 'Till now there is no FYP Registered' });
       }
@@ -72,7 +76,11 @@ router.post('/',coordinatorauthentication , async (req, res) => {
   
   router.get('/rejected', async (req, res) => {
     try {
-      const rejected_projects = await Rejected_projects.findAll();
+      const rejected_projects = await Rejected_projects.findAll(
+        {
+          order: [['createdAt', 'DESC']] 
+         }
+      );
       if (rejected_projects.length === 0) {
         return res.status(404).json({ error: 'Till now there is no FYP Registered' });
       }

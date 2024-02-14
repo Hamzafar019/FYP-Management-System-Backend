@@ -41,6 +41,7 @@ router.get('/details', coordinatorauthentication, async (req, res) => {
         }
         // Create an array to store submission details
         const submissionDetails = [];
+        let totalObtainedMarks=0
         let totalMarks=0
         // Fetch all submissions once to get their details
         const allSubmissions = await Submission.findAll();
@@ -61,27 +62,22 @@ router.get('/details', coordinatorauthentication, async (req, res) => {
                 id: submission.id,
                 name: submission.name,
                 weightage: submission.weightage,
-                marks: marks,
-                totalWeightedMarks: marks * submission.weightage
+                marks: marks
             });
-            totalMarks+=marks * submission.weightage
+            totalObtainedMarks+=marks 
+            totalMarks+=submission.weightage
         }
         const query = {};
 
-    // Add the dynamic column name and value to the query object
-    query[foundInColumn] = "present";
-
-    // Use the query object in the MongoDB query
-    const attendanceCount = await Meetings.count({query});
+    const attendanceCount = await Meetings.count({where:{[foundInColumn]:"present", 
+    groupId: registration.id}});
     
-        // Step 4: Count the number of meetings where the group is present
         const meetingsCounts = await Meetings.count({ where:{groupId: registration.id}});
         console.log(registration)
-        console.log(totalMarks)
         console.log(meetingsCounts)
         console.log(submissionDetails)
 
-        res.json({ totalMarks, meetingsCounts,submissionDetails, attendanceCount,registration});
+        res.json({ totalObtainedMarks, totalMarks,meetingsCounts,submissionDetails, attendanceCount,registration});
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");

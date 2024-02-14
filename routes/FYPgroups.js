@@ -13,6 +13,7 @@ router.get("/mygroups", supervisorauthentication, (req, res) => {
     where: {
       supervisor: supervisorEmail,
     },
+    order: [['createdAt', 'DESC']]
   })
     .then((results) => {
       // Handle the query results here

@@ -66,7 +66,11 @@ router.post('/',coordinatorauthentication , async (req, res) => {
   // Read all announcements
   router.get('/', coordinatorauthentication, async (req, res) => {
     try {
-      const announcements = await Announcement.findAll();
+      const announcements = await Announcement.findAll(
+        {
+          order: [['createdAt', 'DESC']] 
+         }
+      );
       if (announcements.length === 0) {
         return res.status(404).json({ error: 'No announcements found for the specified destination' });
       }
@@ -89,6 +93,7 @@ router.post('/',coordinatorauthentication , async (req, res) => {
             { target },
             { target:"both" },
           ],},
+  order: [['createdAt', 'DESC']]
       });
   
       if (announcements.length === 0) {

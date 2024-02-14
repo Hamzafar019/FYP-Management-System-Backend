@@ -150,7 +150,7 @@ router.get('/marks', async (req, res) => {
     
             // If supervisorMarks is not null, calculate the total marks
             if (supervisorMarks !== null) {
-              const totalMarks = supervisorMarks * submission.weightage;
+              const totalMarks = supervisorMarks;
               // If groupId already exists in totalMarksByGroup, add to it, otherwise set it
               if (totalMarksByGroup.hasOwnProperty(groupId)) {
                 totalMarksByGroup[groupId] += totalMarks;
@@ -166,7 +166,7 @@ router.get('/marks', async (req, res) => {
             totalMarks
           }));
     
-          totalWeightage += submission.weightage*100;
+          totalWeightage += submission.weightage;
           return {
             id: submission.id,
             name: submission.name,

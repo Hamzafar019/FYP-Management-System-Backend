@@ -31,7 +31,7 @@ router.post('/', upload.single('file'), async (req, res) => {
       
     }
     else{
-      console.log(submissionId,groupId)
+      // console.log(submissionId,groupId)
     }
 
     // Extract file-related data
