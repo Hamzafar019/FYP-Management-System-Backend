@@ -63,7 +63,8 @@ router.get('/FYPrelatedData', supervisorandstudentauthentication, async (req, re
       console.log("shit\n\n\n\n")
       console.log(domainname)
 
-      videos = await Video.findAll({ where: { domainname: domainname } });
+      videos = await Video.findAll({ where: { domainname: domainname } ,
+        order: [['createdAt', 'DESC']] });
 
         if (!videos || videos.length === 0) {
           return res.status(404).json({ message: "No videos found for the specified Domain Name" });

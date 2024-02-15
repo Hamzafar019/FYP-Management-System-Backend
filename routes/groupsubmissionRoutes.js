@@ -100,7 +100,8 @@ router.get('/view',supervisorandstudentauthentication,async(req,res)=>{
       let fileUploads = await FileUploads.findAll({ 
         where: { 
           groupsubmissionId: groupsubmissionId
-        } 
+        } ,
+        order: [['createdAt', 'DESC']]
       });
       // Ensure fileUploads is an array, even if only one record is found
       fileUploads = Array.isArray(fileUploads) ? fileUploads : [fileUploads];

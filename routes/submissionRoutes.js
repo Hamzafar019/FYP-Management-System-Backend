@@ -48,7 +48,8 @@ router.post('/create', coordinatorauthentication, async (req, res) => {
 router.get('/viewall', async (req, res) => {
   try {
     // Fetch all submissions from the database
-    const submissions = await Submission.findAll();
+    const submissions = await Submission.findAll({
+      order: [['createdAt', 'DESC']]});
     res.status(200).json(submissions); // Send response with all submissions
   } catch (error) {
     console.error('Error fetching submissions:', error);

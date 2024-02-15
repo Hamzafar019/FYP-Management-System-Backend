@@ -75,7 +75,7 @@ router.get('/mymeetings', authentication,async (req, res) => {
         { student3: email },
         { supervisor: email }
       ]
-    }
+    },
     });
 
     // Check if any registrations with the provided email exist
@@ -88,7 +88,8 @@ router.get('/mymeetings', authentication,async (req, res) => {
 
     // Retrieve meetings data for the extracted IDs
     const meetings = await Meetings.findAll({
-      where: { groupId: { [Op.in]: ids } }
+      where: { groupId: { [Op.in]: ids } },
+      order: [['createdAt', 'DESC']]
     });
 
     // Return meetings data

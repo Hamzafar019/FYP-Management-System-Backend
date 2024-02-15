@@ -73,7 +73,8 @@ router.get('/FYPrelatedData', supervisorandstudentauthentication, async (req, re
     if(req.groupid){
       const groupid=req.groupid
 
-      videos = await Video.findAll({ where: { groupId: groupid } });
+      videos = await Video.findAll({ where: { groupId: groupid },
+        order: [['createdAt', 'DESC']] });
 
         if (!videos || videos.length === 0) {
           return res.status(404).json({ message: "No videos found for the specified email" });
@@ -84,7 +85,8 @@ router.get('/FYPrelatedData', supervisorandstudentauthentication, async (req, re
     else if(req.email){
       const email=req.email
       
-       videos = await Video.findAll({ where: { supervisorEmail: email } });
+       videos = await Video.findAll({ where: { supervisorEmail: email },
+        order: [['createdAt', 'DESC']] });
       
 
         if (!videos || videos.length === 0) {
